@@ -1,0 +1,123 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // =========================
+    // Users
+    // =========================
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid);
+      allow update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    // =========================
+    // Wallet
+    // =========================
+
+    match /wallets/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update, delete: if false;
+
+      match /transactions/{transactionId} {
+        allow read: if isOwner(uid);
+        allow create, update, delete: if false;
+      }
+    }
+
+    // =========================
+    // Products
+    // =========================
+
+    match /products/{productId} {
+      allow read: if signedIn();
+
+      // إنشاء وتعديل وحذف المنتجات
+      // يتم لاحقاً التحكم فيها من Backend.
+      allow create, update, delete: if false;
+    }
+
+    // =========================
+    // Product Secrets (بيانات الدخول الحساسة)
+    // =========================
+    //
+    // ممنوع قراءتها أو كتابتها من التطبيق نهائيًا في هذه المرحلة.
+    // فقط الـ Cloud Functions (عبر Admin SDK) تقدر توصلها.
+    // نظام التسليم الآمن للمشتري هيتم لاحقًا في مرحلة قادمة.
+    match /productSecrets/{productId} {
+      allow read, write: if false;
+    }
+
+    // =========================
+    // Orders
+    // =========================
+
+    match /orders/{orderId} {
+      allow read: if signedIn()
+        && (
+          resource.data.buyerId == request.auth.uid ||
+          resource.data.sellerId == request.auth.uid
+        );
+
+      allow create, update, delete: if false;
+    }
+
+    // =========================
+    // Chats
+    // =========================
+
+    match /chats/{orderId} {
+
+      allow read: if signedIn()
+        && (
+          resource.data.buyerId == request.auth.uid ||
+          resource.data.sellerId == request.auth.uid
+        );
+
+      allow create, update, delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if signedIn()
+          && (
+            get(
+              /databases/$(database)/documents/chats/$(orderId)
+            ).data.buyerId == request.auth.uid
+            ||
+            get(
+              /databases/$(database)/documents/chats/$(orderId)
+            ).data.sellerId == request.auth.uid
+          );
+
+        allow create, update, delete: if false;
+      }
+    }
+
+    // =========================
+    // Games
+    // =========================
+
+    match /games/{gameId} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    // =========================
+    // Deny everything else
+    // =========================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

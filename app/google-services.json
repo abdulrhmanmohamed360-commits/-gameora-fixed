@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "799837051267",
+    "project_id": "gameora-f799e",
+    "storage_bucket": "gameora-f799e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799837051267:android:384593ea79e140efb2beb6",
+        "android_client_info": {
+          "package_name": "com.gameora.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCohQldNmyuSij-F_nsUeDLOo53pTN6b_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

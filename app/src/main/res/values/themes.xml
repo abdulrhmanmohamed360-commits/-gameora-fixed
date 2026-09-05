@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        ثيم بسيط لشاشة الإطلاق (Splash) قبل ما تتولى Compose التحكم في الواجهة
+        بالكامل عبر GameoraTheme في Theme.kt. الألوان هنا لازم تفضل متطابقة
+        مع GameoraPurple/BackgroundDark في ui/theme/Color.kt.
+    -->
+    <style name="Theme.Gameora" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#0B0B14</item>
+        <item name="android:windowBackground">#0B0B14</item>
+        <item name="android:colorBackground">#0B0B14</item>
+    </style>
+</resources>
